@@ -1,0 +1,13 @@
+# Бинарники
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Environment
+.env

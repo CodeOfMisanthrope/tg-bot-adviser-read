@@ -1,0 +1,27 @@
+# Базовая нормализация переносов строк
+* text=auto
+
+# Go файлы всегда LF
+*.go text eol=lf
+*.mod text eol=lf
+*.sum text eol=lf
+
+# Shell скрипты
+*.sh text eol=lf
+
+# Windows скрипты
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Бинарники не трогаем
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.a binary
+
+# Protobuf
+*.pb.go linguist-generated=true
+
+# Игнорировать vendor в статистике языков GitHub
+vendor/** linguist-vendored
