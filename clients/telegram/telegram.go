@@ -11,7 +11,10 @@ type Client struct {
 func New(host string, token string) Client {
 	return Client{
 		host:     host,
-		basePath: "bot" + token,
+		basePath: newBasePath(token),
 		client:   http.Client{},
 	}
+}
+func newBasePath(token string) string {
+	return "bot" + token
 }
