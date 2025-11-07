@@ -3,5 +3,12 @@ package err_utils
 import "fmt"
 
 func Wrap(msg string, err error) error {
-	return fmt.Errorf("can't do request: %w", err)
+	return fmt.Errorf("%s: %w", msg, err)
+}
+func WrapIfErr(msg string, err error) error {
+	if err == nil {
+		return nil
+	}
+
+	return Wrap(msg, err)
 }
