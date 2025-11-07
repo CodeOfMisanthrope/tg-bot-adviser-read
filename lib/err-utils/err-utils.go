@@ -1,4 +1,4 @@
-package err
+package err_utils
 
 import "fmt"
 
