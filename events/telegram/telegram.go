@@ -19,6 +19,45 @@ func New(client *telegram.Client, storage storage.Storage) *Processor {
 	}
 }
 
+func (p *Processor) Fetch(limit int) ([]events.Event, error) {
+	updates, err := p.tg.Updates(p.offset, limit)
+	if err != nil {
+		return nil, err_utils.Wrap("can't get", err)
+	}
+
+	if len(updates) == 0 {
+		return nil, nil
+	}
+
+	res := make([]events.Event, 0, len(updates))
+
+	for _, u := range updates {
+		res = append(res, event(u))
+	}
+
+	p.offset = updates[len(updates)-1].ID + 1
+
+	return res, nil
+}
+
+func event(upd telegram.Update) events.Event {
+	updType := fetchType(upd)
+
+	res := events.Event{
+		Type: fetchType(upd),
+		Text: fetchText(upd),
+	}
+
+	if updType == events.Message {
+		res.Meta = Meta{
+			ChatID:   upd.Message.Chat.ID,
+			Username: upd.Message.From.Username,
+		}
+	}
+
+	return res
+}
+
 func fetchText(upd telegram.Update) string {
 	if upd.Message == nil {
 		return ""
