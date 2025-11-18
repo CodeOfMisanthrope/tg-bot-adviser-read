@@ -24,3 +24,14 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 
 	}
 }
+
+func isAddCmd(text string) bool {
+	return isURL(text)
+}
+
+func isURL(text string) bool {
+	u, err := url.Parse(text)
+	// todo http, https
+
+	return err == nil && u.Host != ""
+}
