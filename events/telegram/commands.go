@@ -1,8 +1,12 @@
 package telegram
 
 import (
+	"errors"
 	"log"
+	"net/url"
 	"strings"
+	err_utils "tg-bot-adviser-read/lib/err-utils"
+	"tg-bot-adviser-read/storage"
 )
 
 const (
@@ -25,7 +29,7 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	}
 }
 
-func (p *Processor) savePage(chatID int, pageURL string, username string) (err error) {
+func (p *Processor) SavePage(chatID int, pageURL string, username string) (err error) {
 	defer func() { err = err_utils.WrapIfErr("can't command: save page", err) }()
 
 	page := &storage.Page{
@@ -50,6 +54,26 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) (err e
 	}
 
 	return nil
+}
+
+func (p *Processor) SendRandom(chatID int, username string) (err error) {
+	defer func() {
+		err = err_utils.WrapIfErr("can't do command: can't send random", err)
+	}()
+
+	page, err := p.storage.PickRandom(username)
+	if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
+		return err
+	}
+	if errors.Is(err, storage.ErrNoSavedPages) {
+		return p.tg.SendMessages(chatID, msgNoSavedPages)
+	}
+
+	if err := p.tg.SendMessages(chatID, page.URL); err != nil {
+		return err
+	}
+
+	return p.storage.Remove(page)
 }
 
 func isAddCmd(text string) bool {
